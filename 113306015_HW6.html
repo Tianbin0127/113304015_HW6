@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>113304015_HW6_1A2B</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .guess-log {
+            margin-top: 10px;
+            border-bottom: 1px solid #ddd;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>113304015_HW6_1A2B</h1>
+    <p>請輸入一個 4 位不重複數字的猜測：</p>
+    <input type="text" id="userInput" maxlength="4" placeholder="例如：1234">
+    <button onclick="submitGuess()">提交答案</button>
+    <button onclick="resetGame()">重置遊戲</button>
+
+    <div id="result">
+        <h2>猜測記錄</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let answer = generateRandomNumber();
+        let attempts = 0;
+
+        function generateRandomNumber() {
+            const digits = Array.from({ length: 10 }, (_, i) => i.toString());
+            const result = [];
+            while (result.length < 4) {
+                const randomIndex = Math.floor(Math.random() * digits.length);
+                result.push(digits.splice(randomIndex, 1)[0]);
+            }
+            return result.join('');
+        }
+
+        function submitGuess() {
+            const userInput = document.getElementById("userInput").value.trim();
+            if (!isValidInput(userInput)) {
+                alert("請輸入 4 位不重複數字！");
+                return;
+            }
+
+            attempts++;
+            const result = calculateAB(userInput);
+            logGuess(userInput, result);
+
+            if (result === "4A0B") {
+                alert(`恭喜答對！您總共嘗試了 ${attempts} 次。`);
+                resetGame();
+            }
+        }
+
+        function isValidInput(input) {
+            if (input.length !== 4 || !/^\d+$/.test(input)) {
+                return false;
+            }
+            const digits = new Set(input);
+            return digits.size === 4;
+        }
+
+        function calculateAB(guess) {
+            let A = 0, B = 0;
+            for (let i = 0; i < 4; i++) {
+                if (guess[i] === answer[i]) {
+                    A++;
+                } else if (answer.includes(guess[i])) {
+                    B++;
+                }
+            }
+            return `${A}A${B}B`;
+        }
+
+        function logGuess(guess, result) {
+            const logDiv = document.getElementById("log");
+            const guessLog = document.createElement("div");
+            guessLog.classList.add("guess-log");
+            guessLog.textContent = `猜測：${guess} -> 結果：${result}`;
+            logDiv.appendChild(guessLog);
+            document.getElementById("userInput").value = '';
+        }
+
+        function resetGame() {
+            answer = generateRandomNumber();
+            attempts = 0;
+            document.getElementById("log").innerHTML = '';
+            document.getElementById("userInput").value = '';
+            alert("遊戲已重置！");
+        }
+    </script>
+</body>
+</html>
